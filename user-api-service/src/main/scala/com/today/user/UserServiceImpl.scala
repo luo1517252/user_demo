@@ -1,10 +1,19 @@
 package com.today.user
 
+import java.util.Date
+
+import com.today.api.user.enums.UserStatusEnum
 import com.today.api.user.request._
 import com.today.api.user.response._
 import com.today.api.user.service.UserService
+import com.today.user.repository.JdbcRepo
+import org.springframework.beans.factory.annotation.Autowired
 
 class UserServiceImpl extends UserService{
+
+  @Autowired
+  var jdbcRepo:JdbcRepo =_
+
   /**
     *
     **
@@ -41,8 +50,40 @@ class UserServiceImpl extends UserService{
     *1.user_response.RegisterUserResponse
     *
     **/
-  override def registerUser(request: RegisterUserRequest): RegisterUserResponse = ???
 
+  override def registerUser(request: RegisterUserRequest): RegisterUserResponse = {
+    if (preCheckRegisterUser(request)) {
+      jdbcRepo.registerUser(request.userName,request.passWord,request.telephone)
+      RegisterUserResponse(request.userName, request.telephone, UserStatusEnum.ACTIVATED, new Date().getTime)
+    }
+    else null
+  }
+
+  /**
+    * 用户前置验证
+      用户密码
+    * @return true or false
+    */
+  def preCheckRegisterUser(request: RegisterUserRequest): Boolean = {
+    val userName = request.userName
+    val passWord = request.passWord
+    val telephone = request.telephone
+    val tlregex = """1(([3,5,8]\d{9})|(4[5,7]\d{8})|(7[0,6-8]\d{8}))""".r
+    val pwregex = """^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$""".r
+    //手机号码规则验证
+    tlregex.findFirstIn(telephone) match {
+      case None => throw new RuntimeException("号码输入不合法")
+      case _ => true
+    }
+    //密码规则验证
+    pwregex.findFirstIn(passWord) match {
+      case None => throw new RuntimeException("密码输入不正确")
+      case _ => true
+    }
+    if (userName == null) throw new RuntimeException("名字必须填")
+
+    true
+  }
   /**
     *
     **
