@@ -615,6 +615,32 @@
                 </field>
             </fields>
         </struct>
+        <struct namespace="com.today.api.user.request" name="LoginUserRequest">
+            <doc>
+
+ 用户登录请求体
+</doc>
+            <fields>
+                <field tag="1" name="passWord" optional="false" privacy="false">
+                    <dataType>
+                        <kind>STRING</kind>
+                    </dataType>
+                    <doc>
+
+ 密码
+</doc>
+                </field>
+                <field tag="2" name="telephone" optional="false" privacy="false">
+                    <dataType>
+                        <kind>STRING</kind>
+                    </dataType>
+                    <doc>
+
+ 电话号码
+</doc>
+                </field>
+            </fields>
+        </struct>
         <struct namespace="com.today.api.user.response" name="ModifyUserResponse">
             <doc>
 
@@ -678,32 +704,6 @@
                 </field>
             </fields>
         </struct>
-        <struct namespace="com.today.api.user.request" name="ModifyUserRequest">
-            <doc>
-
- 修改用户请求体
-</doc>
-            <fields>
-                <field tag="1" name="email" optional="false" privacy="false">
-                    <dataType>
-                        <kind>STRING</kind>
-                    </dataType>
-                    <doc>
-
- 用户邮箱
-</doc>
-                </field>
-                <field tag="2" name="qq" optional="false" privacy="false">
-                    <dataType>
-                        <kind>STRING</kind>
-                    </dataType>
-                    <doc>
-
- 用户 qq
-</doc>
-                </field>
-            </fields>
-        </struct>
         <struct namespace="com.today.api.user.response" name="FreezeUserResponse">
             <doc>
 
@@ -740,13 +740,31 @@
                 </field>
             </fields>
         </struct>
-        <struct namespace="com.today.api.user.response" name="BlackUserResponse">
+        <struct namespace="com.today.api.user.request" name="ModifyUserRequest">
             <doc>
 
- 拉黑操作返回体
+ 修改用户请求体
 </doc>
             <fields>
-                <field tag="1" name="userId" optional="false" privacy="false">
+                <field tag="1" name="email" optional="false" privacy="false">
+                    <dataType>
+                        <kind>STRING</kind>
+                    </dataType>
+                    <doc>
+
+ 用户邮箱
+</doc>
+                </field>
+                <field tag="2" name="qq" optional="false" privacy="false">
+                    <dataType>
+                        <kind>STRING</kind>
+                    </dataType>
+                    <doc>
+
+ 用户 qq
+</doc>
+                </field>
+                <field tag="3" name="userId" optional="false" privacy="false">
                     <dataType>
                         <kind>STRING</kind>
                     </dataType>
@@ -755,31 +773,12 @@
  用户 id
 </doc>
                 </field>
-                <field tag="2" name="status" optional="false" privacy="false">
-                    <dataType>
-                        <kind>ENUM</kind>
-                        <ref>com.today.api.user.enums.UserStatusEnum</ref>
-                    </dataType>
-                    <doc>
-
- 用户状态
-</doc>
-                </field>
-                <field tag="3" name="remark" optional="false" privacy="false">
-                    <dataType>
-                        <kind>STRING</kind>
-                    </dataType>
-                    <doc>
-
-  操作员冻结备注
-</doc>
-                </field>
             </fields>
         </struct>
-        <struct namespace="com.today.api.user.request" name="FreezeUserRequest">
+        <struct namespace="com.today.api.user.request" name="BlackUserRequest">
             <doc>
 
- 冻结操作请求体
+ 拉黑操作请求体
 </doc>
             <fields>
                 <field tag="1" name="userId" optional="false" privacy="false">
@@ -797,87 +796,7 @@
                     </dataType>
                     <doc>
 
-  操作员冻结备注
-</doc>
-                </field>
-            </fields>
-        </struct>
-        <struct namespace="com.today.api.user.response" name="RegisterUserResponse">
-            <doc>
-
- 注册用户返回体
-</doc>
-            <fields>
-                <field tag="1" name="userName" optional="false" privacy="false">
-                    <dataType>
-                        <kind>STRING</kind>
-                    </dataType>
-                    <doc>
-
- 用户名称
-</doc>
-                </field>
-                <field tag="2" name="telephone" optional="false" privacy="false">
-                    <dataType>
-                        <kind>STRING</kind>
-                    </dataType>
-                    <doc>
-
- 电话号码
-</doc>
-                </field>
-                <field tag="3" name="status" optional="false" privacy="false">
-                    <dataType>
-                        <kind>ENUM</kind>
-                        <ref>com.today.api.user.enums.UserStatusEnum</ref>
-                    </dataType>
-                    <doc>
-
- 用户状态
-</doc>
-                </field>
-                <field tag="4" name="createdAt" optional="false" privacy="false">
-                    <dataType>
-                        <kind>LONG</kind>
-                    </dataType>
-                    <doc>
-
- 注册时间
-</doc>
-                </field>
-            </fields>
-        </struct>
-        <struct namespace="com.today.api.user.request" name="RegisterUserRequest">
-            <doc>
-
- 注册用户请求体
-</doc>
-            <fields>
-                <field tag="1" name="userName" optional="false" privacy="false">
-                    <dataType>
-                        <kind>STRING</kind>
-                    </dataType>
-                    <doc>
-
- 用户名称
-</doc>
-                </field>
-                <field tag="2" name="passWord" optional="false" privacy="false">
-                    <dataType>
-                        <kind>STRING</kind>
-                    </dataType>
-                    <doc>
-
- 密码
-</doc>
-                </field>
-                <field tag="3" name="telephone" optional="false" privacy="false">
-                    <dataType>
-                        <kind>STRING</kind>
-                    </dataType>
-                    <doc>
-
- 电话号码
+  操作员拉黑备注
 </doc>
                 </field>
             </fields>
@@ -928,19 +847,19 @@
                 </field>
             </fields>
         </struct>
-        <struct namespace="com.today.api.user.request" name="LoginUserRequest">
+        <struct namespace="com.today.api.user.response" name="RegisterUserResponse">
             <doc>
 
- 用户登录请求体
+ 注册用户返回体
 </doc>
             <fields>
-                <field tag="1" name="passWord" optional="false" privacy="false">
+                <field tag="1" name="userName" optional="false" privacy="false">
                     <dataType>
                         <kind>STRING</kind>
                     </dataType>
                     <doc>
 
- 密码
+ 用户名称
 </doc>
                 </field>
                 <field tag="2" name="telephone" optional="false" privacy="false">
@@ -952,12 +871,31 @@
  电话号码
 </doc>
                 </field>
+                <field tag="3" name="status" optional="false" privacy="false">
+                    <dataType>
+                        <kind>ENUM</kind>
+                        <ref>com.today.api.user.enums.UserStatusEnum</ref>
+                    </dataType>
+                    <doc>
+
+ 用户状态
+</doc>
+                </field>
+                <field tag="4" name="createdAt" optional="false" privacy="false">
+                    <dataType>
+                        <kind>LONG</kind>
+                    </dataType>
+                    <doc>
+
+ 注册时间
+</doc>
+                </field>
             </fields>
         </struct>
-        <struct namespace="com.today.api.user.request" name="BlackUserRequest">
+        <struct namespace="com.today.api.user.request" name="FreezeUserRequest">
             <doc>
 
- 拉黑操作请求体
+ 冻结操作请求体
 </doc>
             <fields>
                 <field tag="1" name="userId" optional="false" privacy="false">
@@ -975,7 +913,78 @@
                     </dataType>
                     <doc>
 
-  操作员拉黑备注
+  操作员冻结备注
+</doc>
+                </field>
+            </fields>
+        </struct>
+        <struct namespace="com.today.api.user.response" name="BlackUserResponse">
+            <doc>
+
+ 拉黑操作返回体
+</doc>
+            <fields>
+                <field tag="1" name="userId" optional="false" privacy="false">
+                    <dataType>
+                        <kind>STRING</kind>
+                    </dataType>
+                    <doc>
+
+ 用户 id
+</doc>
+                </field>
+                <field tag="2" name="status" optional="false" privacy="false">
+                    <dataType>
+                        <kind>ENUM</kind>
+                        <ref>com.today.api.user.enums.UserStatusEnum</ref>
+                    </dataType>
+                    <doc>
+
+ 用户状态
+</doc>
+                </field>
+                <field tag="3" name="remark" optional="false" privacy="false">
+                    <dataType>
+                        <kind>STRING</kind>
+                    </dataType>
+                    <doc>
+
+  操作员冻结备注
+</doc>
+                </field>
+            </fields>
+        </struct>
+        <struct namespace="com.today.api.user.request" name="RegisterUserRequest">
+            <doc>
+
+ 注册用户请求体
+</doc>
+            <fields>
+                <field tag="1" name="userName" optional="false" privacy="false">
+                    <dataType>
+                        <kind>STRING</kind>
+                    </dataType>
+                    <doc>
+
+ 用户名称
+</doc>
+                </field>
+                <field tag="2" name="passWord" optional="false" privacy="false">
+                    <dataType>
+                        <kind>STRING</kind>
+                    </dataType>
+                    <doc>
+
+ 密码
+</doc>
+                </field>
+                <field tag="3" name="telephone" optional="false" privacy="false">
+                    <dataType>
+                        <kind>STRING</kind>
+                    </dataType>
+                    <doc>
+
+ 电话号码
 </doc>
                 </field>
             </fields>

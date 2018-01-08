@@ -22,6 +22,7 @@
 
       var email: String = null
         var qq: String = null
+        var userId: String = null
         
 
       while (schemeField == null || schemeField.`type` != com.isuwang.org.apache.thrift.protocol.TType.STOP) {
@@ -42,6 +43,12 @@
                     case _ => com.isuwang.org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.`type`)
             }
             
+              case 3 =>
+                  schemeField.`type` match {
+                    case com.isuwang.org.apache.thrift.protocol.TType.STRING => userId = iprot.readString
+                    case _ => com.isuwang.org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.`type`)
+            }
+            
           case _ => com.isuwang.org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.`type`)
         }
       }
@@ -49,7 +56,7 @@
       iprot.readFieldEnd
       iprot.readStructEnd
 
-      val bean = com.today.api.user.request.ModifyUserRequest(email = email,qq = qq)
+      val bean = com.today.api.user.request.ModifyUserRequest(email = email,qq = qq,userId = userId)
       validate(bean)
 
       bean
@@ -76,6 +83,13 @@
             oprot.writeFieldEnd
             
             }
+            {
+            val elem2 = bean.userId 
+            oprot.writeFieldBegin(new com.isuwang.org.apache.thrift.protocol.TField("userId", com.isuwang.org.apache.thrift.protocol.TType.STRING, 3.asInstanceOf[Short]))
+            oprot.writeString(elem2)
+            oprot.writeFieldEnd
+            
+            }
       oprot.writeFieldStop
       oprot.writeStructEnd
     }
@@ -88,6 +102,9 @@
             
               if(bean.qq == null)
               throw new SoaException(SoaBaseCode.NotNull, "qq字段不允许为空")
+            
+              if(bean.userId == null)
+              throw new SoaException(SoaBaseCode.NotNull, "userId字段不允许为空")
             
     }
     

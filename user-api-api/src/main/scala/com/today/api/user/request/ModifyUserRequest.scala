@@ -27,6 +27,13 @@ package com.today.api.user.request
 
         **/
         
-        qq : String
+        qq : String, /**
+        *
+
+ 用户 id
+
+        **/
+        
+        userId : String
         )
       

@@ -32,6 +32,10 @@ struct ModifyUserRequest {
     * 用户 qq
     **/
     2: string qq,
+    /**
+     * 用户 id
+     **/
+    3: string userId,
 }
 
 /**

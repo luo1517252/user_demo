@@ -29,6 +29,8 @@ struct RegisterUserResponse {
 * 修改用户返回体
 **/
 struct ModifyUserResponse {
+
+
     /**
     * 用户名称
     **/
@@ -53,7 +55,6 @@ struct ModifyUserResponse {
     * 更新时间
     **/
     6: i64 updatedAt,
-
 }
 
 /**

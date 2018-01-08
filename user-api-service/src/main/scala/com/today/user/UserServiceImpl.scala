@@ -1,125 +1,137 @@
 package com.today.user
 
+
 import java.util.Date
 
-import com.today.api.user.enums.UserStatusEnum
+import com.today.api.user.enums.{IntegralSourceEnum, IntegralTypeEnum, UserStatusEnum}
 import com.today.api.user.request._
 import com.today.api.user.response._
 import com.today.api.user.service.UserService
 import com.today.user.repository.JdbcRepo
 import org.springframework.beans.factory.annotation.Autowired
 
-class UserServiceImpl extends UserService{
+object UserServiceImpl {
+  val telephoneRegex = "^1(3[0-9]|4[57]|5[0-35-9]|7[01678]|8[0-9])\\d{8}$".r
+  val passwordRegex = """(?=.*\d)(?=.*[A-z])^[0-9A-z]{8,}$""".r
+
+  val isEmail = """^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$""".r
+  val isQQ = """\d{4,12}""".r
+}
+
+class UserServiceImpl extends UserService {
+
+  import UserServiceImpl._
 
   @Autowired
-  var jdbcRepo:JdbcRepo =_
+  var jdbcRepo: JdbcRepo = _
 
   /**
     *
-    **
+    * *
     * ### 用户注册
-    **
+    * *
     * #### 业务描述
     * 用户注册账户，用户密码需要加盐之后存储(加盐方案还么确定,小伙伴可以自己随意设计个简单的加解密方案)
-    **
+    * *
     * #### 接口依赖
     * 无
     * #### 边界异常说明
     * 无
-    **
+    * *
     * #### 输入
     *1.user_request.RegisterUserRequest
-    **
+    * *
     * #### 前置检查
     *1. 手机号码规则验证
     *2. 手机号未被使用验证
     *3. 密码规则,字母数字八位混合
-    **
+    * *
     * ####  逻辑处理
     *1.密码加盐处理
     *2.新增一条user记录
     *3.返回结果 user_response.RegisterUserResponse
-    **
+    * *
     * #### 数据库变更
     *1. insert into user() values()
-    **
+    * *
     * ####  事务处理
     * 无
-    **
+    * *
     * ####  输出
     *1.user_response.RegisterUserResponse
     *
     **/
 
+
   override def registerUser(request: RegisterUserRequest): RegisterUserResponse = {
-    if (preCheckRegisterUser(request)) {
-      jdbcRepo.registerUser(request.userName,request.passWord,request.telephone)
-      RegisterUserResponse(request.userName, request.telephone, UserStatusEnum.ACTIVATED, new Date().getTime)
-    }
-    else null
+
+    assert(registerPreCheck(request))
+
+    jdbcRepo.addUser(request)
+    jdbcRepo.registerUserResponse(request.userName)
+    //RegisterUserResponse("xy","13871353138",UserStatusEnum.ACTIVATED,new Date().getTime)
   }
 
   /**
-    * 用户前置验证
-      用户密码
-    * @return true or false
+    * registerPreCheck 注册前置检查
+    * see  @http://blog.csdn.net/pp_fzp/article/details/50764600
+    * @param request
+    * @return
     */
-  def preCheckRegisterUser(request: RegisterUserRequest): Boolean = {
-    val userName = request.userName
-    val passWord = request.passWord
-    val telephone = request.telephone
-    val tlregex = """1(([3,5,8]\d{9})|(4[5,7]\d{8})|(7[0,6-8]\d{8}))""".r
-    val pwregex = """^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$""".r
-    //手机号码规则验证
-    tlregex.findFirstIn(telephone) match {
-      case None => throw new RuntimeException("号码输入不合法")
-      case _ => true
-    }
-    //密码规则验证
-    pwregex.findFirstIn(passWord) match {
-      case None => throw new RuntimeException("密码输入不正确")
-      case _ => true
-    }
-    if (userName == null) throw new RuntimeException("名字必须填")
-
+  def registerPreCheck(request: RegisterUserRequest): Boolean ={
+    assert(telephoneRegex.findAllIn(request.telephone ).nonEmpty , "手机号码输入不正确")
+    assert(passwordRegex.findFirstIn(request.passWord ).nonEmpty , "密码输入格式不正确")
+    assert(jdbcRepo.checkUserName(request.userName ) , "用户名已经存在")
     true
   }
+
+
   /**
     *
-    **
+    * *
     * ### 用户登录
-    **
+    * *
     * #### 业务描述
     * 用户登录
-    **
+    * *
     * #### 接口依赖
     * 无
     * #### 边界异常说明
     * 无
-    **
+    * *
     * #### 输入
     *1.user_request.LoginUserRequest
-    **
+    * *
     * #### 前置检查
     *1.手机号码规则验证
     *2.密码规则,字母数字八位混合
-    **
+    * *
     * ####  逻辑处理
     *1. 根据手机号码和密码查询用户记录
     *2. 异常用户状态的用户登录返回 Exception
-    **
+    * *
     * #### 数据库变更
     *1. select *  from user where telphone = ? and password = ?
-    **
+    * *
     * ####  事务处理
     * 无
-    **
+    * *
     * ####  输出
     *1.user_response.LoginUserResponse
     *
     **/
-  override def login(request: LoginUserRequest): LoginUserResponse = ???
+  override def login(request: LoginUserRequest): LoginUserResponse = {
 
+    assert(loginPreCheck(request))
+
+    jdbcRepo.selectUserByTelAndPassword(request).get
+  }
+
+  def loginPreCheck(request: LoginUserRequest):Boolean = {
+    assert(telephoneRegex.findFirstIn(request.telephone).nonEmpty,"手机号码输入不正确")
+    assert(passwordRegex.findFirstIn(request.passWord).nonEmpty,"密码输入格式不正确")
+    true
+  }
   /**
     *
     **
@@ -156,7 +168,24 @@ class UserServiceImpl extends UserService{
     *1.user_response.ModifyUserAction
     *
     **/
-  override def modifyUser(request: ModifyUserRequest): ModifyUserResponse = ???
+  override def modifyUser(request: ModifyUserRequest): ModifyUserResponse = {
+
+    assert(modifyPreCheck(request))
+
+    val res:Option[ModifyUserResponse] = jdbcRepo.modifyUserByUserName(request)
+    val presentIntegral:Int = jdbcRepo.selectPresentIntegralById(request.userId)
+    changeUserIntegral(ChangeIntegralRequest(request.userId,presentIntegral.toString,IntegralTypeEnum.ADD,IntegralSourceEnum.PREFECT_INFORMATION))
+
+    res.get
+  }
+
+
+  def modifyPreCheck(request: ModifyUserRequest) = {
+    assert(isEmail.findFirstIn(request.email).nonEmpty,"邮箱格式不正确")
+    assert(isQQ.findFirstIn(request.qq).nonEmpty,"QQ格式不正确")
+    assert(jdbcRepo.checkUserIsFreeze(request.userId),"用户已被冻结或拉黑")
+    true
+  }
 
   /**
     *
@@ -190,7 +219,12 @@ class UserServiceImpl extends UserService{
     *1.user_response.FreezeUserResponse
     *
     **/
-  override def freezeUser(request: FreezeUserRequest): FreezeUserResponse = ???
+  override def freezeUser(request: FreezeUserRequest): FreezeUserResponse = {
+
+   assert(jdbcRepo.checkUserIsFreeze(request.userId),"冻结的用户状态不正确!")
+
+    jdbcRepo.freezeUserByUserId(request,UserStatusEnum.FREEZED.id)
+  }
 
   /**
     *
@@ -200,6 +234,7 @@ class UserServiceImpl extends UserService{
     * #### 业务描述
     * 用户因为触犯一些游戏规则,后台自检程序或者管理员会拉黑该用户,拉黑用户把用户的积分置为0
     **
+    *
     * #### 接口依赖
     * 无
     * #### 边界异常说明
@@ -225,7 +260,12 @@ class UserServiceImpl extends UserService{
     *1.user_response.BlackUserResponse
     *
     **/
-  override def blackUser(request: BlackUserRequest): BlackUserResponse = ???
+  override def blackUser(request: BlackUserRequest): BlackUserResponse = {
+
+    assert(jdbcRepo.checkUserIsFreeze(request.userId), "拉黑的用户状态不正确!!!")
+
+    jdbcRepo.blackUserByUserId(request,UserStatusEnum.BLACK.id)
+  }
 
   /**
     *
@@ -260,5 +300,10 @@ class UserServiceImpl extends UserService{
     *1. i32 流水 Id
     *
     **/
-  override def changeUserIntegral(request: ChangeIntegralRequest): Int = ???
+  override def changeUserIntegral(request: ChangeIntegralRequest): Int = {
+
+    assert(jdbcRepo.checkUserIsFreeze(request.userId), "用户状态不正确!!!")
+
+    jdbcRepo.changeUserIntegral(request)
+  }
 }
